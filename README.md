@@ -35,7 +35,7 @@ There is also a support forum on the Blynk community forums: http://community.bl
 
 ## Software
 
-* [Blynk](http://www.blynk.cc/) Mobile App ([iOS](https://itunes.apple.com/us/app/blynk-iot-for-arduino-rpi/id808760481?mt=8) & [Android](https://play.google.com/store/apps/details?id=cc.blynk&hl=en))
+* [Blynk](http://www.blynk.cc/) Mobile App 
 * Arduino IDE 1.6.9+
 * The project sketch
 
@@ -112,18 +112,8 @@ It's powered from `+5V` from ESP8266, and wired as following:
 
 
 
-## `@tekk`'s V2 Changelog
+## `@prfiredragon`'s New Blynk Changelog
 - Rewrote whole sketch
-- Tried to utilize HardwareSerial `UART2` - no avail :(
-	- `ModbusMaster` library is incopatible with `SoftwareSerial`, (don't even try)... Would need to rewrite whole `ModbusMaster`, so Hardware UART is the only option for smooth & seamless communication because of the interrupt driven data transmission, more precise timing, and HW buffer, and stuff
-- Optimized for very cheap MAX485 module, you can buy it from usual sources...
-- **Feature:** Added option to switch the output of the Tracer MPPT Controller ON/OFF from the Blynk app
-- **Improvement:** You no longer need to disconnect and reconnect Modbus RS485 Serial port from the ESP8266 while uploading
-- Code rewrote to use as little magic constants as possible
-- Added `preTransmission` abd `postTransmission` Modbus handling / signalling, just to be sure...
-- Added calls to `ESP.wdtDisable()` and `ESP.wdtEnable(1)`, temporary System Watchdog shutdown and later found it to be not necessarry
-	- Avoids unwanted rebooting of ESP8366 while receiving data from the Modbus
-- Added more debug outputs and results to USB Serial
 
 
 ## Credits
