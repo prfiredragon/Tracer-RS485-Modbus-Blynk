@@ -114,11 +114,10 @@ It's powered from `+5V` from ESP8266, and wired as following:
 
 ## `@prfiredragon`'s New Blynk Changelog
 - Rewrote whole sketch
+- Now we can upload the firmware by Blynk OTA
 
 
 ## Credits
-- `@prfiredragon:`
-   - CHanged for the new Blynk and Blynk OTA 
 
 - `@jaminNZx:`
 	- Thanks to subtafuge on [Reddit](https://www.reddit.com/r/esp8266/comments/59dt00/using_esp8266_to_connect_rs485_modbus_protocol/) for lending me his working Tracer RS485 code! 
@@ -126,3 +125,6 @@ It's powered from `+5V` from ESP8266, and wired as following:
 - `@tekk:`
 	- Feel free to contact me about my code changes in this version
 	- Thanks to [@jaminNZx](https://github.com/jaminNZx) for the original code. Big up!
+
+- `@prfiredragon:`
+   - Changed for the new Blynk and Blynk OTA 
