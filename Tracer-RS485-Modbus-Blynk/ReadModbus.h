@@ -8,7 +8,8 @@ float stats_today_pv_volt_min, stats_today_pv_volt_max;
 uint8_t result;
 bool rs485DataReceived = true;
 bool loadPoweredOn = true;
-
+long last_sensor_reading = 0;
+long sensor_reading_time = 10000;
 
 #define MAX485_DE D1
 #define MAX485_RE_NEG D2
@@ -38,7 +39,7 @@ void AddressRegistry_331B();
 uint8_t checkLoadCoilState();
 
 ModbusMaster node;
-SimpleTimer timer;
+//SimpleTimer timer;
 
 void preTransmission() {
   digitalWrite(MAX485_RE_NEG, 1);
@@ -95,6 +96,8 @@ void nextRegistryNumber() {
   // exec a function of registry read (cycles between different addresses)
   void executeCurrentRegistryFunction() {
     Registries[currentRegistryNumber]();
+    nextRegistryNumber();  
+    uploadToBlynk();
   }
   
   uint8_t setOutputLoadPower(uint8_t state) {
@@ -267,11 +270,11 @@ void nextRegistryNumber() {
 
 
 
-class ReadModBus {
+//class ReadModBus {
 
-public:
+//public:
 
-  void setup() {
+  void ReadModBus_setup() {
   pinMode(MAX485_RE_NEG, OUTPUT);
   pinMode(MAX485_DE, OUTPUT);
   
@@ -288,15 +291,20 @@ public:
   }
 
   void startTimers() {
-      timerTask1 = timer.setInterval(3000L, executeCurrentRegistryFunction);  
-      timerTask2 = timer.setInterval(3000L, nextRegistryNumber);  
-      timerTask3 = timer.setInterval(3000L, uploadToBlynk);
+      //timerTask1 = timer.setInterval(3000L, executeCurrentRegistryFunction);  
+      //timerTask2 = timer.setInterval(3000L, nextRegistryNumber);  
+      //timerTask3 = timer.setInterval(3000L, uploadToBlynk);
   }
 
-  void run() {
-    timer.run();
+  void ReadModBus_run() {
+    if(millis() - last_sensor_reading >= sensor_reading_time) // if it’s 5000ms or more since we last took a reading
+      {
+          executeCurrentRegistryFunction();
+          last_sensor_reading = millis();
+      }
+    //timer.run();
   }
 
-};
+//};
 
-ReadModBus Read_ModBus;
+//ReadModBus Read_ModBus;

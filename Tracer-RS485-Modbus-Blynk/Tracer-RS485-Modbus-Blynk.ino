@@ -1,9 +1,11 @@
 
 // Fill-in information from your Blynk Template here
-#define BLYNK_TEMPLATE_ID           "TMPLYy0Kvjo6"
-#define BLYNK_DEVICE_NAME           "Tracer 1"
+//#define BLYNK_TEMPLATE_ID           "TMPLxxxxxx"
+//#define BLYNK_DEVICE_NAME           "Device"
+#define BLYNK_TEMPLATE_ID "TMPLOV_21c2i"
+#define BLYNK_DEVICE_NAME "Tracer"
 
-#define BLYNK_FIRMWARE_VERSION        "1.0.4"
+#define BLYNK_FIRMWARE_VERSION        "0.1.6"
 
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG
@@ -23,12 +25,13 @@ void setup()
 {
   Serial.begin(115200);
   delay(100);
-  Read_ModBus.setup();
+  ReadModBus_setup();
+
   BlynkEdgent.begin();
-  Read_ModBus.startTimers();
+  
 }
 
 void loop() {
   BlynkEdgent.run();
-  Read_ModBus.run();
+  ReadModBus_run();
 }
