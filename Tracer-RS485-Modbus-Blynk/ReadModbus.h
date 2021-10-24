@@ -1,7 +1,6 @@
 #include <ModbusMaster.h>
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
-int timerTask1, timerTask2, timerTask3;
 float battChargeCurrent, battDischargeCurrent, battOverallCurrent, battChargePower;
 float bvoltage, ctemp, btemp, bremaining, lpower, lcurrent, pvvoltage, pvcurrent, pvpower;
 float stats_today_pv_volt_min, stats_today_pv_volt_max;
@@ -9,7 +8,7 @@ uint8_t result;
 bool rs485DataReceived = true;
 bool loadPoweredOn = true;
 long last_sensor_reading = 0;
-long sensor_reading_time = 10000;
+long sensor_reading_time = 3000;
 
 #define MAX485_DE D1
 #define MAX485_RE_NEG D2

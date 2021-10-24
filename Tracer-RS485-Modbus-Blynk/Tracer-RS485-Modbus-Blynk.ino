@@ -5,7 +5,7 @@
 #define BLYNK_TEMPLATE_ID "TMPLOV_21c2i"
 #define BLYNK_DEVICE_NAME "Tracer"
 
-#define BLYNK_FIRMWARE_VERSION        "0.1.6"
+#define BLYNK_FIRMWARE_VERSION        "0.1.7"
 
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG
