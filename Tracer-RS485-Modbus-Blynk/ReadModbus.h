@@ -8,7 +8,7 @@ uint8_t result;
 bool rs485DataReceived = true;
 bool loadPoweredOn = true;
 long last_sensor_reading = 0;
-long sensor_reading_time = 3000;
+long sensor_reading_time = 600;
 
 #define MAX485_DE D1
 #define MAX485_RE_NEG D2
@@ -35,7 +35,9 @@ void AddressRegistry_3106();
 void AddressRegistry_310D();
 void AddressRegistry_311A();
 void AddressRegistry_331B();
+
 uint8_t checkLoadCoilState();
+void uploadToBlynk();
 
 ModbusMaster node;
 //SimpleTimer timer;
@@ -70,6 +72,7 @@ void nextRegistryNumber() {
   currentRegistryNumber++;
   if (currentRegistryNumber >= ARRAY_SIZE(Registries)) {
     currentRegistryNumber = 0;
+    uploadToBlynk();
   }
 }
 
@@ -96,7 +99,7 @@ void nextRegistryNumber() {
   void executeCurrentRegistryFunction() {
     Registries[currentRegistryNumber]();
     nextRegistryNumber();  
-    uploadToBlynk();
+    
   }
   
   uint8_t setOutputLoadPower(uint8_t state) {
