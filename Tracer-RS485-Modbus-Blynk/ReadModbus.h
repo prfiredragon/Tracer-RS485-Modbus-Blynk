@@ -2,7 +2,7 @@
 
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 float battChargeCurrent, battDischargeCurrent, battOverallCurrent, battChargePower;
-float bvoltage, ctemp, btemp, bremaining, lpower, lcurrent, pvvoltage, pvcurrent, pvpower;
+float bvoltage, ctemp, btemp, rbtemp, pctemp, bremaining, lvoltage, lpower, lcurrent, pvvoltage, pvcurrent, pvpower;
 float stats_today_pv_volt_min, stats_today_pv_volt_max;
 uint8_t result;
 bool rs485DataReceived = true;
@@ -29,6 +29,30 @@ long sensor_reading_time = 600;
 #define vPIN_BATTERY_CHARGE_POWER       V11
 #define vPIN_BATTERY_OVERALL_CURRENT    V12
 #define vPIN_LOAD_ENABLED               V14
+
+
+/*
+   ModBus Register Address List
+*/
+#define PV_ARRAY_VOLT                   0x00
+#define PV_ARRAY_CURRENT                0x01
+#define PV_ARRAY_POWER_L                0x02
+#define PV_ARRAY_POWER_H                0x03
+#define BATT_VOLT                       0x04
+#define BATT_CURRENT                    0x05
+#define BATT_POWER_L                    0x06
+#define BATT_POWER_H                    0x07
+#define LOAD_VOLT                       0x0C
+#define LOAD_CURRENT                    0x0D
+#define LOAD_POWER_L                    0x0E
+#define LOAD_POWER_H                    0x0F
+#define BATT_TEMP                       0x10
+#define CONTROLLER_TEMP                 0x11
+#define POWER_COMPONENTS_TEMP           0x12
+#define BATT_SOC                        0x00
+#define REMOTE_BATT_TEMP                0x01
+
+
 
 void AddressRegistry_3100();
 void AddressRegistry_3106();
@@ -57,8 +81,8 @@ typedef void (*RegistryList[])();
 
 RegistryList Registries = {
   AddressRegistry_3100,
-  AddressRegistry_3106,
-  AddressRegistry_310D,
+  //AddressRegistry_3106,
+  //AddressRegistry_310D,
   AddressRegistry_311A,
   AddressRegistry_331B,
 };
@@ -182,7 +206,7 @@ void nextRegistryNumber() {
  }
 
 // -----------------------------------------------------------------
-
+/*
   void AddressRegistry_3100() {
     result = node.readInputRegisters(0x3100, 6);
   
@@ -209,7 +233,8 @@ void nextRegistryNumber() {
       //Serial.println(battChargeCurrent);
     }
   }
-
+*/
+/*
   void AddressRegistry_3106()
   {
     result = node.readInputRegisters(0x3106, 2);
@@ -220,7 +245,8 @@ void nextRegistryNumber() {
       //Serial.println(battChargePower);
     }
   }
-
+*/
+/*
   void AddressRegistry_310D() 
   {
     result = node.readInputRegisters(0x310D, 3);
@@ -238,7 +264,7 @@ void nextRegistryNumber() {
       Serial.println("Read register 0x310D failed!");
     }    
   } 
-
+*/
   void AddressRegistry_311A() {
     result = node.readInputRegisters(0x311A, 2);
    
@@ -253,6 +279,20 @@ void nextRegistryNumber() {
     } else {
       rs485DataReceived = false;
       Serial.println("Read register 0x311A failed!");
+      Serial.println();
+      Serial.print("FAIL TO READ, CODE: 0x");
+      Serial.println(result, HEX);
+      Serial.println();
+
+      // Result codes:
+      // 0x00 Success
+      // 0x01 Illegal function Error
+      // 0x02 Illegal Data Address Error
+      // 0x03 Illegal Data Value Error
+      // 0xE0 Invalid Response Slave ID Error
+      // 0xE1 Invalid Response Function Error
+      // 0xE2 Response Timed-Out Error
+      // 0xE3 Invalid Response CRC Error
     }
   }
 
@@ -266,9 +306,116 @@ void nextRegistryNumber() {
     } else {
       rs485DataReceived = false;
       Serial.println("Read register 0x331B failed!");
+      Serial.println();
+      Serial.print("FAIL TO READ, CODE: 0x");
+      Serial.println(result, HEX);
+      Serial.println();
+
+      // Result codes:
+      // 0x00 Success
+      // 0x01 Illegal function Error
+      // 0x02 Illegal Data Address Error
+      // 0x03 Illegal Data Value Error
+      // 0xE0 Invalid Response Slave ID Error
+      // 0xE1 Invalid Response Function Error
+      // 0xE2 Response Timed-Out Error
+      // 0xE3 Invalid Response CRC Error
     }
   }
 
+
+  
+  void AddressRegistry_3100()
+{
+
+  result = node.readInputRegisters(0x3100, 20); 
+
+  if (result == node.ku8MBSuccess)
+  {
+    pvvoltage = node.getResponseBuffer(PV_ARRAY_VOLT)/100.0f;
+    pvcurrent = node.getResponseBuffer(PV_ARRAY_CURRENT)/100.0f;
+    pvpower = (node.getResponseBuffer(PV_ARRAY_POWER_L) |
+                    (node.getResponseBuffer(PV_ARRAY_POWER_H) << 16))/100.0f;
+
+    bvoltage = node.getResponseBuffer(BATT_VOLT)/100.0f;
+    battChargeCurrent = node.getResponseBuffer(BATT_CURRENT)/100.0f;
+    battChargePower = (node.getResponseBuffer(BATT_POWER_L) |
+                    (node.getResponseBuffer(BATT_POWER_H) << 16))/100.0f;
+
+    lvoltage = node.getResponseBuffer(LOAD_VOLT)/100.0f;
+    lcurrent = node.getResponseBuffer(LOAD_CURRENT)/100.0f;
+    lpower = (node.getResponseBuffer(LOAD_POWER_L) |
+                    (node.getResponseBuffer(LOAD_POWER_H) << 16))/100.0f;
+
+    btemp = node.getResponseBuffer(BATT_TEMP)/100.0f;
+    ctemp = node.getResponseBuffer(CONTROLLER_TEMP)/100.0f; 
+    pctemp = node.getResponseBuffer(POWER_COMPONENTS_TEMP)/100.0f; 
+                    
+                    
+                    
+      
+      /*Serial.print("PV Voltage: ");
+      Serial.println(pvvoltage);
+  
+      Serial.print("PV Current: ");
+      Serial.println(pvcurrent);
+  
+      Serial.print("PV Power: ");
+      Serial.println(pvpower);
+      Serial.println();
+      
+      Serial.print("Battery Voltage: ");
+      Serial.println(bvoltage);
+      
+      Serial.print("Battery Charge Current: ");
+      Serial.println(battChargeCurrent);
+      
+      Serial.print("Battery Charge Power: ");
+      Serial.println(battChargePower);
+                    
+      Serial.print("Battery Temperature: ");
+      Serial.println(btemp);     
+      Serial.println();
+      
+      Serial.print("Load Voltage: ");
+      Serial.println(lvoltage);
+      Serial.print("Load Current: ");
+      Serial.println(lcurrent);
+      Serial.print("Load Power: ");
+      Serial.println(lpower);
+      Serial.println();
+      
+      Serial.print("Controller Temp: ");
+      Serial.println(ctemp);
+      Serial.println();
+      Serial.print("Power Components Temp: ");
+      Serial.println(pctemp);
+      Serial.println();   
+    
+      Serial.println();
+      Serial.println();*/
+
+            
+    
+  } else {
+    
+    Serial.println("Read register 0x3100 failed!");
+    Serial.println();
+    Serial.print("FAIL TO READ, CODE: 0x");
+    Serial.println(result, HEX);
+    Serial.println();
+
+    // Result codes:
+    // 0x00 Success
+    // 0x01 Illegal function Error
+    // 0x02 Illegal Data Address Error
+    // 0x03 Illegal Data Value Error
+    // 0xE0 Invalid Response Slave ID Error
+    // 0xE1 Invalid Response Function Error
+    // 0xE2 Response Timed-Out Error
+    // 0xE3 Invalid Response CRC Error
+   }
+}
 
 
 
